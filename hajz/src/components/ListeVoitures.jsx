@@ -16,7 +16,15 @@ const ListeVoitures = () => {
     }
   };
 
-  const ajouterVoiture = (nouvelleVoiture) => {
+  const ajouterVoiture = (formData) => {
+    const nouvelleVoiture = {
+      id: `v${Date.now()}`,
+      Marque: formData.get('Marque'),
+      TypeCarburant: formData.get('TypeCarburant'),
+      PrixLocation: formData.get('PrixLocation'),
+      image: URL.createObjectURL(formData.get('image')) 
+    };
+
     setVoitures([...voitures, nouvelleVoiture]);
   };
 
@@ -29,7 +37,7 @@ const ListeVoitures = () => {
       <h1>Liste des Voitures</h1>
       <button onClick={toggleFormulaire}>
         {afficherFormulaire ? 'Annuler' : 'Ajouter une Voiture'}
-      </button> {/* Bouton pour afficher/masquer le formulaire */}
+      </button>
       {afficherFormulaire && ( 
         <AjouterVoiture onAjouter={ajouterVoiture} />
       )}

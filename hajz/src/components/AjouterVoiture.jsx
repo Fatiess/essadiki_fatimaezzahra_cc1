@@ -7,22 +7,37 @@ const AjouterVoiture = ({ onAjouter }) => {
     Marque: '',
     TypeCarburant: '',
     PrixLocation: '',
-    image: ''
+    image: null // Changez à null pour un fichier
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNouvelleVoiture((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, files } = e.target;
+    if (type === 'file') {
+      // Mettez à jour l'état pour le fichier image
+      setNouvelleVoiture((prev) => ({
+        ...prev,
+        [name]: files[0] // Prendre le premier fichier
+      }));
+    } else {
+      setNouvelleVoiture((prev) => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (nouvelleVoiture.Marque && nouvelleVoiture.PrixLocation) {
-      onAjouter({ ...nouvelleVoiture, id: `v${Date.now()}` });
-      setNouvelleVoiture({ id: '', Marque: '', TypeCarburant: '', PrixLocation: '', image: '' });
+    if (nouvelleVoiture.Marque && nouvelleVoiture.PrixLocation && nouvelleVoiture.image) {
+      const formData = new FormData();
+      formData.append('id', `v${Date.now()}`);
+      formData.append('Marque', nouvelleVoiture.Marque);
+      formData.append('TypeCarburant', nouvelleVoiture.TypeCarburant);
+      formData.append('PrixLocation', nouvelleVoiture.PrixLocation);
+      formData.append('image', nouvelleVoiture.image);
+
+      onAjouter(formData); // Passer le FormData à la fonction d'ajout
+      setNouvelleVoiture({ id: '', Marque: '', TypeCarburant: '', PrixLocation: '', image: null });
     } else {
       alert('Veuillez remplir tous les champs');
     }
@@ -54,11 +69,11 @@ const AjouterVoiture = ({ onAjouter }) => {
         required
       />
       <input
-        type="text"
+        type="file"
         name="image"
-        value={nouvelleVoiture.image}
         onChange={handleChange}
-        placeholder="Nom du fichier image"
+        accept="image/*" // Pour limiter aux fichiers d'image
+        required
       />
       <button type="submit">Ajouter Voiture</button>
     </form>
